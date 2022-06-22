@@ -14,6 +14,10 @@ module.exports = (() => {
         },
         getTasks: () => {
             return global.scheduledTasks;
+        },
+        removeAllTasks:()=>{
+            global.scheduledTasks.clear();
+            global.scheduledTasks=new Map();
         }
     };
 })();

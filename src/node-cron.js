@@ -23,7 +23,7 @@ const storage = require('./storage');
  */
 function schedule(expression, func, options) {
     const task = createTask(expression, func, options);
-
+    
     storage.save(task);
 
     return task;
@@ -61,4 +61,31 @@ function getTasks() {
     return storage.getTasks();
 }
 
-module.exports = { schedule, validate, getTasks };
+
+/**
+ * Stop and delete all scheduled tasks
+ *
+ * @returns {Promise} The scheduled tasks.
+ */
+function gracefulShutdownAllTasks() {
+
+    let promise = new Promise(function (resolve, reject) {
+
+        try {
+            let tasks = storage.getTasks();
+            tasks.forEach(function (values, keys) {
+                values.stop();
+            });
+            storage.removeAllTasks();
+            resolve();
+        }
+        catch (err) {
+            reject(err);
+        }
+
+    });//EOP promise
+
+    return promise;
+}
+
+module.exports = { schedule, validate, getTasks, gracefulShutdownAllTasks };
